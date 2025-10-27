@@ -2,9 +2,13 @@
   "compilerOptions": {
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
-    "target": "es2022",
-    "module": "ESNext",
+    "target": "esnext",
+    "module": "NodeNext",
+    "moduleResolution": "nodenext",
     "strict": true,
-    "resolveJsonModule": true
-  }
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true
+  },
+
 }

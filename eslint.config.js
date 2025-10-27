@@ -1,7 +1,3 @@
-// @ts-check
-const eslint = require('@eslint/js');
-const tseslint = require('typescript-eslint');
-
 module.exports = tseslint.config(
     {
         ignores: ['src-tauri/**', 'dist/**', 'node_modules/**'],
@@ -14,7 +10,19 @@ module.exports = tseslint.config(
             ...tseslint.configs.stylistic
         ],
         rules: {
-            'indent': ['error', 4], // vanilla JS indentation
+            'indent': ['error', 4],
+            'import/extensions': ['error', 'ignorePackages', {
+                ts: 'never',
+                js: 'never'
+            }]
         },
+        settings: {
+            'import/resolver': {
+                typescript: {
+                    alwaysTryTypes: true,
+                    project: './tsconfig.json'
+                }
+            }
+        }
     }
 );

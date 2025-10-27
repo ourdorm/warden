@@ -1,34 +1,75 @@
 import { Client, Events, GatewayIntentBits } from "discord.js";
-import config from '../config.json' with { type: 'json' };
-const { TOKEN, CLIENT_ID } = config;
+import fs from 'fs';
+import path from 'path';
+
+const configPath = path.join(__dirname, '../config.json');
+const rawData = fs.readFileSync(configPath, 'utf-8');
+const { TOKEN, CLIENT_ID, CATEGORY_ID } = JSON.parse(rawData);
+
+export { CATEGORY_ID };
 
 import { REST, Routes } from "discord.js";
+import { handleRoomCreate } from './commands/roomCreate.ts';
+import { handleRoomRename } from './commands/roomRename.ts';
 
 // Create a new client instance
 const client = new Client<boolean>({ intents: [GatewayIntentBits.Guilds] });
-
+const rest = new REST({ version: "10" }).setToken(TOKEN);
 const commands = [
     {
         name: "ping",
         description: "Replies with Pong!",
     },
+    {
+        name: "room",
+        description: "Manage your room",
+        options: [
+            {
+                type: 1,
+                name: "create",
+                description: "Create your own room",
+                options: [
+                    {
+                        type: 3,
+                        name: "name",
+                        description: "Custom room name (optional)",
+                        required: true,
+                    },
+                ],
+            },
+            {
+                type: 1,
+                name: "rename",
+                description: "Rename your existing room",
+                options: [
+                    {
+                        type: 3,
+                        name: "new_name",
+                        required: true,
+                        description: "New room name",
+                    },
+                ],
+            },
+        ],
+    },
 ];
 
-const rest = new REST({ version: "10" }).setToken(TOKEN);
+async function registerCommands() {
+    try {
+        console.log("Started refreshing application (/) commands.");
 
-try {
-    console.log("Started refreshing application (/) commands.");
+        await rest.put(Routes.applicationCommands(CLIENT_ID), { body: commands });
 
-    await rest.put(Routes.applicationCommands(CLIENT_ID), { body: commands });
-
-    console.log("Successfully reloaded application (/) commands.");
-} catch (error) {
-    console.error(error);
+        console.log("Successfully reloaded application (/) commands.");
+    } catch (error) {
+        console.error(error);
+    }
 }
 
+registerCommands();
+
+
 // When the client is ready, run this code (only once).
-// The distinction between `client: Client<boolean>` and `readyClient: Client<true>` is important for TypeScript developers.
-// It makes some properties non-nullable.
 client.once(Events.ClientReady, (readyClient) => {
     console.log(`Ready! Logged in as ${readyClient.user.tag}`);
 });
@@ -38,6 +79,16 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
     if (interaction.commandName === "ping") {
         await interaction.reply("Pong!");
+    }
+
+    if (interaction.commandName === "room") {
+        const subcommand = interaction.options.getSubcommand();
+        
+        if (subcommand === "create") {
+            await handleRoomCreate(interaction);
+        } else if (subcommand === "rename") {
+            await handleRoomRename(interaction);
+        }
     }
 });
 
