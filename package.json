@@ -1,0 +1,32 @@
+{
+  "name": "warden",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/main.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "ts-node src/main.ts",
+    "format:eslint": "eslint --ext .ts,.tsx --fix .",
+    "format:prettier": "prettier --write '**/*.ts'",
+    "format": "pnpm run format:eslint && pnpm run format:prettier"
+  },
+  "keywords": [],
+  "author": "irisnk, from Dorm",
+  "license": "ISC",
+  "packageManager": "pnpm@10.19.0",
+  "dependencies": {
+    "bufferutil": "^4.0.9",
+    "discord.js": "^14.24.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.38.0",
+    "@typescript-eslint/eslint-plugin": "^8.46.2",
+    "@typescript-eslint/parser": "^8.46.2",
+    "eslint": "^9.38.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.2"
+  }
+}
