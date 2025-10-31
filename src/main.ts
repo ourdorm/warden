@@ -1,5 +1,5 @@
 import { Client, Events, GatewayIntentBits } from "discord.js";
-import fs from 'fs';
+import fs, { read } from 'fs';
 import path from 'path';
 
 const configPath = path.join(__dirname, '../config.json');
@@ -11,6 +11,7 @@ export { CATEGORY_ID };
 import { REST, Routes } from "discord.js";
 import { handleRoomCreate } from './commands/roomCreate.ts';
 import { handleRoomRename } from './commands/roomRename.ts';
+import { sortRoomsAlphabetically } from "./utils/roomSort.ts";
 
 // Create a new client instance
 const client = new Client<boolean>({ intents: [GatewayIntentBits.Guilds] });
@@ -70,8 +71,9 @@ registerCommands();
 
 
 // When the client is ready, run this code (only once).
-client.once(Events.ClientReady, (readyClient) => {
+client.once(Events.ClientReady, async (readyClient) => {
     console.log(`Ready! Logged in as ${readyClient.user.tag}`);
+    await sortRoomsAlphabetically(readyClient);
 });
 
 client.on(Events.InteractionCreate, async (interaction) => {
@@ -83,7 +85,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
     if (interaction.commandName === "room") {
         const subcommand = interaction.options.getSubcommand();
-        
+
         if (subcommand === "create") {
             await handleRoomCreate(interaction);
         } else if (subcommand === "rename") {

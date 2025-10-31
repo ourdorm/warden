@@ -1,13 +1,14 @@
 import { ChatInputCommandInteraction, ChannelType } from 'discord.js';
 import { getRoomForUser, setRoomForUser } from '../utils/storage.ts';
 import { CATEGORY_ID } from '../main.ts';
+import { sortRoomsAlphabetically } from '../utils/roomSort.ts';
 
 export async function handleRoomCreate(interaction: ChatInputCommandInteraction): Promise<void> {
     await interaction.deferReply({ ephemeral: true });
 
     const userId = interaction.user.id;
     const customName = interaction.options.getString('name', true);
-    
+
     // Check if user already has a room
     const existingRoom = await getRoomForUser(userId);
     if (existingRoom) {
@@ -28,6 +29,7 @@ export async function handleRoomCreate(interaction: ChatInputCommandInteraction)
             channelId: channel.id,
         });
 
+        await sortRoomsAlphabetically(interaction.client);
         await interaction.editReply(`Room created: <#${channel.id}>`);
     } catch (error) {
         console.error('Error creating room:', error);
