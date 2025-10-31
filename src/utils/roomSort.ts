@@ -52,12 +52,3 @@ export async function sortRoomsAlphabetically(client: Client): Promise<void> {
         console.error('Error sorting rooms:', error);
     }
 }
-
-/**
- * Triggers room sorting on startup
- * @param client Discord client
- */
-export function sortOnStartup(client: Client): void {
-    sortRoomsAlphabetically(client);
-    console.log('Initial room sort completed');
-}
